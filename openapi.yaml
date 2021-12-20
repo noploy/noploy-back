@@ -1,0 +1,859 @@
+openapi: 3.0.0
+info:
+  title: Noploy API
+  description: Noploy API
+  version: 1.0.0
+servers:
+  - url: 'https://api.noploy.io'
+    description: Production
+  - url: 'https://sandbox.noploy.io'
+    description: Sandbox
+paths:
+  /api/profile:
+    get:
+      operationId: Profile.Profile
+      tags:
+        - Profile
+      summary: Get profile data
+      security:
+        - oAuth2:
+            - read
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /api/orders/invoice:
+    post:
+      operationId: Orders.OrderInvoice
+      tags:
+        - Orders
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInvoice"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+                format: guid
+  /api/orders/{id}:
+    get:
+      operationId: Orders.GetById
+      tags:
+        - Orders
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          x-nullable: false
+          schema:
+            type: string
+            format: guid
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+  /api/orders:
+    get:
+      operationId: Orders.Get
+      tags:
+        - Orders
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderQuery"
+  /api/customers/active/{cnpjCpf}:
+    post:
+      operationId: Customers.ActiveByCnpjCpf
+      tags:
+        - Customers
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+        - name: cnpjCpf
+          in: path
+          required: true
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/customers/modify-password:
+    post:
+      tags:
+        - Customers
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerModifyPassword"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          description: ""
+  /api/customers/auth:
+    post:
+      tags:
+        - Customers
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            text/json:
+              schema:
+                $ref: "#/components/schemas/CustomerTokenAuth"
+  "/api/products/{id}/variants/{idVariant}":
+    get:
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          x-nullable: false
+          schema:
+            type: string
+            format: guid
+        - name: idVariant
+          in: path
+          required: true
+          x-nullable: false
+          schema:
+            type: string
+            format: guid
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+  /api/products/{id}/variants:
+    get:
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          x-nullable: false
+          schema:
+            type: string
+            format: guid
+        - name: pesquisa
+          in: query
+          x-nullable: true
+          schema:
+            type: string
+        - name: raiz
+          in: query
+          x-nullable: true
+          schema:
+            type: string
+        - name: groups
+          in: query
+          x-nullable: true
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+        - name: take
+          in: query
+          x-nullable: false
+          schema:
+            type: integer
+            format: int32
+        - name: skip
+          in: query
+          x-nullable: false
+          schema:
+            type: integer
+            format: int32
+        - name: nivel
+          in: query
+          x-nullable: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductVariantQuery"
+  "/api/products/variants/{id}":
+    get:
+      tags:
+        - Products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          x-nullable: false
+          schema:
+            type: string
+            format: guid
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductVariant"
+  /api/customers/recover-password:
+    post:
+      tags:
+        - Customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerRecoverPassword"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          description: ""
+  /api/customers/dealer:
+    post:
+      tags:
+        - Customers
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: "#/components/schemas/Dealer"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Dealer"
+          text/json:
+            schema:
+              $ref: "#/components/schemas/Dealer"
+          application/*+json:
+            schema:
+              $ref: "#/components/schemas/Dealer"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          description: ""
+  /api/customer/activate:
+    post:
+      tags:
+        - Customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerActivate"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          description: ""
+  /api/customers/generate-auth-token:
+    post:
+      tags:
+        - Customers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerGenerateAuthToken"
+        required: true
+        x-nullable: false
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerTokenAuth"
+  "/api/systems/settings/{nome}":
+    get:
+      tags:
+        - Systems
+      parameters:
+        - name: nome
+          in: path
+          required: true
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/systems/settings/:
+    get:
+      tags:
+        - Systems
+      parameters:
+        - name: nome
+          in: query
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/systems/date:
+    get:
+      tags:
+        - Systems
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+  /api/systems/Banco/Migrate:
+    post:
+      tags:
+        - Systems
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ""
+  /api/systems/file/send:
+    post:
+      tags:
+        - Systems
+      parameters:
+        - name: Authorization
+          in: header
+          x-nullable: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          x-nullable: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/FileSend"
+      responses:
+        "200":
+          x-nullable: false
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileSend"
+tags:
+- name: Customers
+- name: Products
+- name: Systems
+components:
+  securitySchemes:
+    oAuth2:
+      type: oauth2
+      description: API Auth
+      flows:
+        clientCredentials:
+          tokenUrl: https://api.noploy.io/oauth2/authorize
+          scopes:
+            read: read all data
+            write: write data
+            action: execute actions
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+
+
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+    Team:
+      type: object
+      properties:
+        name:
+          type: string
+
+    Order:
+      type: object
+      required:
+        - amount
+        - sequential
+        - creationDate
+        - id
+      properties:
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        amount:
+          type: number
+          format: double
+        sequential:
+          type: integer
+          format: int32
+        creationDate:
+          type: string
+          format: date-time
+        localization:
+          $ref: "#/components/schemas/OrderEndereco"
+        id:
+          type: string
+          format: guid
+    OrderInvoice:
+      type: object
+      required:
+        - amount
+        - sequential
+        - creationDate
+      properties:
+        token:
+          type: string
+
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderInvoiceItem"
+        amount:
+          type: number
+          format: double
+        idLocalization:
+          type: string
+          format: guid
+        sequential:
+          type: integer
+          format: int32
+        creationDate:
+          type: string
+          format: date-time
+    OrderQuery:
+      type: object
+      required:
+        - length
+      properties:
+        length:
+          type: integer
+          format: int32
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Order"
+    OrderInvoiceItem:
+      type: object
+      required:
+        - quantity
+        - amount
+        - idProductVariant
+      properties:
+        quantity:
+          type: number
+          format: double
+        description:
+          type: string
+        amount:
+          type: number
+          format: double
+        externalCode:
+          type: string
+        idProductVariant:
+          type: string
+          format: guid
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+    CustomerModifyPassword:
+      type: object
+      properties:
+        senha:
+          type: string
+        novaSenha:
+          type: string
+    CustomerTokenAuth:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+        token: { }
+    Product:
+      type: object
+      required:
+        - price
+        - hasStock
+        - id
+        - relevance
+        - forecastDate
+        - showForecastDate
+      properties:
+        externalCode:
+          type: string
+        description:
+          type: string
+        details:
+          type: string
+        price:
+          type: number
+          format: double
+        groups:
+          type: array
+          items:
+            type: string
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariant"
+        hasStock:
+          type: boolean
+        Images:
+          type: array
+          items: { }
+        amount:
+          type: number
+          format: double
+        id:
+          type: string
+          format: guid
+        priceWithoutDiscount:
+          type: number
+          format: double
+        relevance:
+          type: integer
+          format: int32
+        forecastDate:
+          type: string
+          format: date-time
+        showForecastDate:
+          type: boolean
+    CustomerRecoverPassword:
+      type: object
+      properties:
+        email:
+          type: string
+    ProductVariantQuery:
+      type: object
+      required:
+        - length
+      properties:
+        length:
+          type: integer
+          format: int32
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariant"
+    ProductVariant:
+      type: object
+      required:
+        - price
+        - creationDate
+        - updateData
+        - unit
+        - forecastDate
+        - showForecastDate
+      properties:
+        externalCode:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+        creationDate:
+          type: string
+          format: date-time
+        updateData:
+          type: string
+          format: date-time
+        unit:
+          $ref: "#/components/schemas/ProductVariantsUnit"
+        amount:
+          type: number
+          format: double
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+        groups:
+          type: array
+          items:
+            type: string
+        details:
+          type: string
+        number:
+          type: string
+        tamanho:
+          type: string
+        variant:
+          type: string
+        id: { }
+        priceWithoutDiscount:
+          type: number
+          format: double
+        forecastDate:
+          type: string
+          format: date-time
+        showForecastDate:
+          type: boolean
+    CustomerActivate:
+      type: object
+      required:
+        - recuperarSenha
+      properties:
+        token:
+          type: string
+        senha:
+          type: string
+        recuperarSenha:
+          type: boolean
+    Dealer:
+      type: object
+      required:
+        - dataNascimento
+        - tipo
+      properties:
+        name:
+          type: string
+        identity:
+          type: string
+        stateRegistration:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+        cnpjCpf:
+          type: string
+        type:
+          $ref: "#/components/schemas/CustomerType"
+        email:
+          type: string
+        password:
+          type: string
+        codeRepresentative:
+          type: string
+        address:
+          $ref: "#/components/schemas/CustomerAddress"
+        notes:
+          type: string
+    CustomerGenerateAuthToken:
+      type: object
+      properties:
+        usuario:
+          type: string
+        senha:
+          type: string
+    FileSend:
+      type: object
+      properties:
+        path:
+          type: string
+    OrderEndereco:
+      type: object
+      required:
+        - idUnitFederative
+      properties:
+        street:
+          type: string
+        number:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        zipCode:
+          type: string
+        phone:
+          type: string
+        celular:
+          type: string
+        apelido:
+          type: string
+        nome:
+          type: string
+        idUnitFederative:
+          type: string
+          format: guid
+    ProductVariantsUnit:
+      type: integer
+      description: ""
+      x-enumNames:
+        - UN
+        - KG
+      enum:
+        - 0
+        - 1
+    CustomerType:
+      type: integer
+      description: ""
+      x-enumNames:
+        - PHYSICAL
+        - LEGAL
+      enum:
+        - 0
+        - 1
+    OrderItem:
+      type: object
+      required:
+        - quantity
+        - amount
+        - idProductVariant
+      properties:
+        quantity:
+          type: number
+          format: double
+        description:
+          type: string
+        amount:
+          type: number
+          format: double
+        externalCode:
+          type: string
+        idProductVariant:
+          type: string
+          format: guid
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+    CustomerAddress:
+      type: object
+      required:
+        - idUnitFederative
+      properties:
+        complement:
+          type: string
+        street:
+          type: string
+        number:
+          type: string
+        district:
+          type: string
+        city:
+          type: string
+        zipCode:
+          type: string
+        idUnitFederative:
+          type: string
+          format: guid
+        phone:
+          type: string
+        cellphone:
+          type: string
+    Image:
+      type: object
+      properties:
+        path:
+          type: string
+  requestBodies:
+    FileSend:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+                x-nullable: true
+
